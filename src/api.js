@@ -1,5 +1,5 @@
 const API_KEY = '%2FMcX%2B7YU%2Fh04t%2B5jrX8TYO1ukFJ%2FJSDwGS6M8X1LrBSX8LAtyAfR2PF6A035cWXI05v4ASuAxBPHm%2BNEw5IIEg%3D%3D'; // Provided API key
-const BASE_URL = '/api/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
+const BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
 
 // 기상청 초단기실황 API는 매시 정각 40분 이후에 해당 시간의 데이터가 생성됨
 const getBaseDateTime = () => {
