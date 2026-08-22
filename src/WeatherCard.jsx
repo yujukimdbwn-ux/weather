@@ -14,7 +14,7 @@ const getPtyText = (pty) => {
   }
 };
 
-const WeatherCard = ({ data, onReload }) => {
+const WeatherCard = ({ data, locationName, onReload }) => {
   if (!data) return null;
 
   const temperature = data.T1H || '--';
@@ -26,7 +26,9 @@ const WeatherCard = ({ data, onReload }) => {
   return (
     <div className="glass-card">
       <div className="title">CURRENT WEATHER</div>
-      <div className="location">인계동</div>
+      <div className="location" style={{ fontSize: locationName && locationName.length > 6 ? '1.5rem' : '2rem' }}>
+        {locationName || '인계동'}
+      </div>
       
       <div className="weather-desc">
         {weatherStatus}

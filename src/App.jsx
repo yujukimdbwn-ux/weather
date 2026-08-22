@@ -1,18 +1,40 @@
 import React, { useEffect, useState } from 'react'
 import { fetchWeather } from './api'
 import WeatherCard from './WeatherCard'
+import { dfs_xy_conv, getCurrentPosition, getLocationNameFromGrid } from './utils/geo'
 
 function App() {
   const [weatherData, setWeatherData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [locationName, setLocationName] = useState('위치 확인 중...')
 
   const loadWeather = async () => {
     setLoading(true);
     setError(null);
     try {
-      // 인계동 nx=61, ny=121
-      const data = await fetchWeather(61, 121);
+      // 1. Get GPS Position
+      setLocationName('현재 위치 확인 중...');
+      let nx = 61; // Default fallback to 인계동
+      let ny = 121;
+      let locName = '수원시 팔달구 인계동';
+
+      try {
+        const coords = await getCurrentPosition();
+        const grid = dfs_xy_conv("toXY", coords.lat, coords.lng);
+        nx = grid.nx;
+        ny = grid.ny;
+        locName = getLocationNameFromGrid(nx, ny);
+      } catch (gpsError) {
+        console.warn("GPS Error, using default location:", gpsError);
+        // Fallback or show warning, we just proceed with default
+        locName = '인계동 (GPS 거부됨)';
+      }
+
+      setLocationName(locName);
+
+      // 2. Fetch Weather using nx, ny
+      const data = await fetchWeather(nx, ny);
       setWeatherData(data);
     } catch (err) {
       setError(err.message || '날씨 정보를 불러오는 데 실패했습니다.');
@@ -27,7 +49,7 @@ function App() {
 
   return (
     <>
-      {loading && <div className="loading">날씨 정보를 불러오는 중입니다...</div>}
+      {loading && <div className="loading">날씨 정보를 불러오는 중입니다...<br/><small>위치 확인 창이 뜨면 허용해주세요.</small></div>}
       {error && (
         <div className="error">
           <p>{error}</p>
@@ -35,7 +57,7 @@ function App() {
         </div>
       )}
       {!loading && !error && (
-        <WeatherCard data={weatherData} onReload={loadWeather} />
+        <WeatherCard data={weatherData} locationName={locationName} onReload={loadWeather} />
       )}
     </>
   )
