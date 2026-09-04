@@ -47,15 +47,14 @@ function App() {
   // 요청 순서: 1) GPS 및 날씨 로드, 2) 푸시 권한 요청
   loadWeather();
 
-  // OneSignal 푸시 권한 요청 (OneSignal SDK가 index.html에 로드되어 있다고 가정)
-  if (window.OneSignal) {
-    window.OneSignal.isPushNotificationsEnabled().then(isEnabled => {
+    // OneSignal 푸시 권한 요청 (SDK 초기화 후 수행)
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function (OneSignal) {
+      const isEnabled = await OneSignal.isPushNotificationsEnabled();
       if (!isEnabled) {
-        // 사용자에게 푸시 권한을 물어봅니다.
-        window.OneSignal.showNativePrompt();
+        OneSignal.showNativePrompt();
       }
     });
-  }
 }, []);
 
 
