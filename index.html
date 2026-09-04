@@ -6,7 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f2027" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <title>인계동 날씨 알림</title>
+<!-- OneSignal Web SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function (OneSignal) {
+        await OneSignal.init({
+          appId: "04d6cffe-4814-482d-8018-f13839e23ec8",
+          notifyButton: { enable: true },
+          serviceWorkerPath: "/OneSignalSDKWorker.js"
+        });
+      });
+    </script>
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
