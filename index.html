@@ -1,38 +1,35 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f2027" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-<!-- OneSignal Web SDK -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function (OneSignal) {
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f2027" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <!-- Icon replaced with PNG to avoid manifest error -->
+  <link rel="icon" type="image/png" href="/icon.png" />
+
+  <!-- OneSignal Web SDK (single inclusion) -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    // Guard against double initialization
+    window.__oneSignalInitialized = window.__oneSignalInitialized || false;
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function (OneSignal) {
+      if (!window.__oneSignalInitialized) {
         await OneSignal.init({
           appId: "04d6cffe-4814-482d-8018-f13839e23ec8",
           notifyButton: { enable: true },
           serviceWorkerPath: "/OneSignalSDKWorker.js"
         });
-      });
-    </script>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "YOUR_ONESIGNAL_APP_ID_HERE", // 유저가 가입 후 교체해야 함
-          notifyButton: {
-            enable: true,
-          },
-        });
-      });
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+        window.__oneSignalInitialized = true;
+      }
+    });
+  </script>
+
+  <title>인계동 날씨 알림</title>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
