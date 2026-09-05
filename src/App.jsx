@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { fetchWeather } from './api'
 import WeatherCard from './WeatherCard'
 import { dfs_xy_conv, getCurrentPosition, getLocationNameFromGrid } from './utils/geo'
+import { requestNotificationPermission, setupForegroundMessaging } from './firebase'
 
 function App() {
   const [weatherData, setWeatherData] = useState(null)
@@ -44,23 +45,13 @@ function App() {
   };
 
   useEffect(() => {
-  // 요청 순서: 1) GPS 및 날씨 로드, 2) 푸시 권한 요청
-  loadWeather();
+    // 1) 날씨 로드
+    loadWeather();
 
-    // OneSignal 푸시 권한 요청 (SDK 초기화 후 수행, fallback if method missing)
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function (OneSignal) {
-      if (typeof OneSignal.isPushNotificationsEnabled === 'function') {
-        const isEnabled = await OneSignal.isPushNotificationsEnabled();
-        if (!isEnabled) {
-          OneSignal.showNativePrompt();
-        }
-      } else {
-        // 메서드가 없을 경우 바로 프롬프트 표시
-        OneSignal.showNativePrompt();
-      }
-    });
-}, []);
+    // 2) FCM 알림 권한 요청 및 포그라운드 메시지 설정
+    requestNotificationPermission();
+    setupForegroundMessaging();
+  }, []);
 
 
   return (
