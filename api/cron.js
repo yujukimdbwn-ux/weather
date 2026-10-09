@@ -66,21 +66,35 @@ export default async function handler(req, res) {
     if (data.response && data.response.header.resultCode === '00') {
       const items = data.response.body.items.item;
       const ptyItem = items.find(item => item.category === 'PTY');
+      const t1hItem = items.find(item => item.category === 'T1H');
+      const rehItem = items.find(item => item.category === 'REH');
+
       const pty = ptyItem ? ptyItem.obsrValue : '0';
+      const t1h = t1hItem ? t1hItem.obsrValue : '--';
+      const reh = rehItem ? rehItem.obsrValue : '--';
 
       // PTY: 0(없음), 1(비), 2(비/눈), 3(눈), 5(빗방울), 6(빗방울눈날림), 7(눈날림)
       const rainCodes = ['1', '2', '3', '5', '6', '7'];
+      const isRain = rainCodes.includes(pty);
+      const isForce = req.query?.force === 'true';
 
-      if (rainCodes.includes(pty)) {
-        const title = '☔ 오늘 우산 챙기세요!';
-        const body = '인계동에 현재 비 또는 눈이 오고 있습니다. 외출 시 우산을 꼭 챙기세요!';
+      if (isRain || isForce) {
+        let title, body;
+        if (isRain) {
+          title = `☔ 오늘 우산 챙기세요! (현재 ${t1h}°C)`;
+          body = `인계동에 현재 비 또는 눈이 오고 있습니다. 외출 시 우산을 꼭 챙기세요! (습도: ${reh}%)`;
+        } else {
+          title = `🌤️ [날씨 알림] 수원 인계동 현재 ${t1h}°C`;
+          body = `현재 비 소식 없이 맑음/구름 상태입니다. 외출 시 참고하세요! (습도: ${reh}%)`;
+        }
+
         const result = await sendFCMToTopic(title, body);
 
         console.log(`[PUSH 발송 완료] 시각: ${new Date().toISOString()} | 제목: "${title}" | 본문: "${body}" | FCM 메시지ID: ${result}`);
-        return res.status(200).json({ status: 'success', message: 'Rain detected, push sent', title, body, result });
+        return res.status(200).json({ status: 'success', message: 'Push sent', title, body, t1h, reh, pty, result });
       } else {
-        console.log(`[PUSH 미발송] 시각: ${new Date().toISOString()} | 날씨 상태: 비 안 옴 (PTY: ${pty})`);
-        return res.status(200).json({ status: 'success', message: 'No rain detected, no push sent', pty });
+        console.log(`[PUSH 미발송] 시각: ${new Date().toISOString()} | 날씨 상태: 비 안 옴 (PTY: ${pty}, 기온: ${t1h}°C)`);
+        return res.status(200).json({ status: 'success', message: 'No rain detected, no push sent', t1h, reh, pty });
       }
     } else {
       console.error('[KMA API 오류]', data);
