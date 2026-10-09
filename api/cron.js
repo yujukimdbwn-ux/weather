@@ -76,7 +76,7 @@ export default async function handler(req, res) {
       // PTY: 0(없음), 1(비), 2(비/눈), 3(눈), 5(빗방울), 6(빗방울눈날림), 7(눈날림)
       const rainCodes = ['1', '2', '3', '5', '6', '7'];
       const isRain = rainCodes.includes(pty);
-      const isForce = req.query?.force === 'true';
+      const isForce = (req.query && req.query.force === 'true') || (req.url && req.url.includes('force=true'));
 
       if (isRain || isForce) {
         let title, body;
