@@ -72,15 +72,18 @@ export default async function handler(req, res) {
       const rainCodes = ['1', '2', '3', '5', '6', '7'];
 
       if (rainCodes.includes(pty)) {
-        const result = await sendFCMToTopic(
-          '☔ 오늘 우산 챙기세요!',
-          '인계동에 현재 비 또는 눈이 오고 있습니다. 외출 시 우산을 꼭 챙기세요!'
-        );
-        return res.status(200).json({ status: 'success', message: 'Rain detected, push sent', result });
+        const title = '☔ 오늘 우산 챙기세요!';
+        const body = '인계동에 현재 비 또는 눈이 오고 있습니다. 외출 시 우산을 꼭 챙기세요!';
+        const result = await sendFCMToTopic(title, body);
+
+        console.log(`[PUSH 발송 완료] 시각: ${new Date().toISOString()} | 제목: "${title}" | 본문: "${body}" | FCM 메시지ID: ${result}`);
+        return res.status(200).json({ status: 'success', message: 'Rain detected, push sent', title, body, result });
       } else {
-        return res.status(200).json({ status: 'success', message: 'No rain detected, no push sent' });
+        console.log(`[PUSH 미발송] 시각: ${new Date().toISOString()} | 날씨 상태: 비 안 옴 (PTY: ${pty})`);
+        return res.status(200).json({ status: 'success', message: 'No rain detected, no push sent', pty });
       }
     } else {
+      console.error('[KMA API 오류]', data);
       return res.status(500).json({ status: 'error', message: 'KMA API Error' });
     }
   } catch (error) {
