@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.png', 'favicon.svg'],
+      includeAssets: ['icon.png', 'apple-touch-icon.png'],
       manifest: {
         name: '인계동 날씨 알림',
         short_name: '날씨 알림',
