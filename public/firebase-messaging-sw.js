@@ -14,14 +14,16 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// 백그라운드 메시지 수신 처리
+// 백그라운드 메시지 수신 처리 (FCM SDK가 payload.notification이 있을 때는 자동으로 1번 띄우므로, 중복 띄우기 방지)
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] 백그라운드 메시지 수신:', payload);
-  const notificationTitle = payload.notification?.title || '날씨 알림';
-  const notificationOptions = {
-    body: payload.notification?.body || '날씨 정보를 확인하세요.',
-    icon: '/icon.png',
-    badge: '/icon.png'
-  };
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  if (!payload.notification) {
+    const notificationTitle = payload.data?.title || '날씨 알림';
+    const notificationOptions = {
+      body: payload.data?.body || '날씨 정보를 확인하세요.',
+      icon: '/icon.png',
+      badge: '/icon.png'
+    };
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  }
 });

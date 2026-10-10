@@ -73,7 +73,8 @@ export function setupForegroundMessaging() {
     if (title && Notification.permission === 'granted') {
       new Notification(title, {
         body: body || '',
-        icon: '/icon.png'
+        icon: '/icon.png',
+        tag: 'weather-push-notification'
       });
     }
   });
